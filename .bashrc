@@ -15,10 +15,10 @@ print_pwd() {
 }
 
 print_git_branch() {
-  local GIT_ORIGIN=$(git remote show origin 2>/dev/null || echo "No origin")
+  local GIT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "No origin")
   local GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
   if [ "$GIT_BRANCH" != "" ]; then
-    echo -e "${BEGIN}${RED}${END}${GIT_ORIGIN}:(${GIT_BRANCH})${ENDFORMAT}"
+    echo -e "${BEGIN}${RED}${END}${GIT_ORIGIN}: (${GIT_BRANCH})${ENDFORMAT}"
   else
     echo -e "${BEGIN}${FAINT}${END}(Not a git repository)${ENDFORMAT}"
   fi
