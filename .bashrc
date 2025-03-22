@@ -2,7 +2,7 @@
 TERM=xterm-256color
 
 # Ansii color codes
-BEGIN="\e["
+BEGIN="\[\e["
 RED="31"
 GREEN="32"
 BLUE="34"
@@ -10,7 +10,7 @@ RESET="0"
 BOLD="1"
 FAINT="2"
 ITALIC="3"
-END="m"
+END="m\]"
 BOLDGREEN="${BEGIN}${BOLD};${GREEN}${END}"
 ENDFORMAT="${BEGIN}${RESET}${END}"
 
@@ -18,18 +18,33 @@ print_pwd() {
   pwd | sed "s|$HOME|~|g"
 }
 
+get_git_branch() {
+  git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
 print_git_branch() {
-  local GIT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "No origin")
-  local GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  get_git_branch || echo "Not a git repository"
+}
+
+print_git_origin() {
+  local GIT_BRANCH=$(get_git_branch)
   if [ "$GIT_BRANCH" != "" ]; then
-    echo -e "${BEGIN}${FAINT}${END}${GIT_ORIGIN}: ${ENDFORMAT}${BEGIN}${RED}${END}(${GIT_BRANCH})${ENDFORMAT}"
+    GIT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "No origin")
+    echo -e "${GIT_ORIGIN}: "
   else
-    echo -e "${BEGIN}${FAINT}${END}(Not a git repository)${ENDFORMAT}"
+    echo ""
   fi
 }
 
 # Add formatting to terminal prefixing
-export PS1="\n\$(print_git_branch)\n${BOLDGREEN}\u${ENDFORMAT}@ ${BEGIN}${BLUE}${END}\$(print_pwd): ${ENDFORMAT}"
+print_ps1() {
+  local GIT_INFO="${BEGIN}${FAINT}${END}\$(print_git_origin)${ENDFORMAT}${BEGIN}${RED}${END}(\$(print_git_branch))${ENDFORMAT}"
+  local USER_INFO="${BOLDGREEN}\u${ENDFORMAT}"
+  local DIR_INFO="${BEGIN}${BLUE}${END}\$(print_pwd)${ENDFORMAT}"
+
+  echo -e "\n${GIT_INFO}\n${USER_INFO}@ ${DIR_INFO}: "
+}
+export PS1="$(print_ps1)"
 
 # Change tab title
 PROMPT_COMMAND='echo -en "\033]0;$(whoami)@$(print_pwd)\a"'
