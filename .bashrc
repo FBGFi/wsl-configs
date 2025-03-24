@@ -36,9 +36,18 @@ print_git_origin() {
   fi
 }
 
+print_branch_color() {
+  local GIT_BRANCH=$(get_git_branch)
+  if [ "$GIT_BRANCH" != "" ]; then
+    echo $RED
+  else
+    echo $FAINT
+  fi
+}
+
 # Add formatting to terminal prefixing
 print_ps1() {
-  local GIT_INFO="${BEGIN}${FAINT}${END}\$(print_git_origin)${ENDFORMAT}${BEGIN}${RED}${END}(\$(print_git_branch))${ENDFORMAT}"
+  local GIT_INFO="${BEGIN}${FAINT}${END}\$(print_git_origin)${ENDFORMAT}${BEGIN}\$(print_branch_color)${END}(\$(print_git_branch))${ENDFORMAT}"
   local USER_INFO="${BOLDGREEN}\u${ENDFORMAT}"
   local DIR_INFO="${BEGIN}${BLUE}${END}\$(print_pwd)${ENDFORMAT}"
 
