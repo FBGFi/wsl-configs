@@ -23,14 +23,19 @@ get_git_branch() {
 }
 
 print_git_branch() {
-  get_git_branch || echo "Not a git repository"
+  local GIT_BRANCH=$(get_git_branch)
+  if [ "$GIT_BRANCH" != "" ]; then
+    echo -e $GIT_BRANCH
+  else
+    echo "Not a git repository"
+  fi
 }
 
 print_git_origin() {
   local GIT_BRANCH=$(get_git_branch)
   if [ "$GIT_BRANCH" != "" ]; then
     GIT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "No origin")
-    echo -e "${GIT_ORIGIN}: "
+    echo "${GIT_ORIGIN}: "
   else
     echo ""
   fi
