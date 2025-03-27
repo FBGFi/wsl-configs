@@ -57,3 +57,6 @@ export PS1="$(print_ps1)"
 
 # Change tab title
 PROMPT_COMMAND='echo -en "\033]0;$(whoami)@$(print_pwd)\a"'
+
+# Bind cycle complete to Shift+Tab
+bind '"\e[Z": menu-complete'
